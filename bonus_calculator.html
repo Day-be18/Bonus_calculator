@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор премии — Т‑Банк</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f5fa6'/%3E%3Cpath d='M10 8h12v16H10z' fill='%23f5c800' opacity='0.2'/%3E%3Cpath d='M12 10h8v4h-8zm0 6h8v4h-8zm0 6h4v4h-4z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #F5F4F0;
+    --surface: #FFFFFF;
+    --border: #E3E1D9;
+    --text: #1A1916;
+    --muted: #7C7A72;
+    --accent: #1F5FA6;
+    --accent-light: #E8F1FB;
+    --accent-mid: #3A8CDF;
+    --yellow: #F5C800;
+    --yellow-light: #FFFBE6;
+    --success: #2D6B0F;
+    --success-light: #E8F4DC;
+    --warning: #875100;
+    --warning-light: #FFF3DA;
+    --danger: #A02020;
+    --danger-light: #FCEAEA;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--text);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .tbank-logo {
+    width: 32px; height: 32px;
+    background: var(--yellow);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .header-text h1 {
+    font-size: 15px; font-weight: 600; color: #fff; line-height: 1.2;
+  }
+  .header-text p { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── Section titles ── */
+  .sec-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+  .sec-label:first-child { margin-top: 0; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .card-head {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 14px;
+  }
+
+  .card-icon {
+    width: 30px; height: 30px;
+    border-radius: var(--radius-xs);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  /* ── Forms ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .full { grid-column: 1/-1; }
+
+  .fg { display: flex; flex-direction: column; gap: 4px; }
+
+  label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  input[type=number], select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  input[type=number]::-webkit-inner-spin-button { opacity: 0; }
+
+  input[type=number]:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 0 3px rgba(58,140,223,0.12);
+    background: var(--surface);
+  }
+
+  /* ── Scores ── */
+  .scores-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 10px;
+    min-height: 50px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+
+  .score-pill { position: relative; display: inline-block; }
+
+  .score-input {
+    width: 56px; padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 12px; text-align: center;
+    color: var(--text); background: var(--surface);
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  .score-input::-webkit-inner-spin-button { opacity: 0; }
+  .score-input:focus { outline: none; border-color: var(--accent-mid); box-shadow: 0 0 0 2px rgba(58,140,223,0.12); }
+  .score-input.good { border-color: #8FCA4A; background: #F2FAE5; color: #2D6B0F; }
+  .score-input.mid  { border-color: #F5C800; background: #FFFBE6; color: #875100; }
+  .score-input.bad  { border-color: #E87878; background: #FEF3F3; color: #A02020; }
+  .score-input.zero { border-color: #C0BDB5; background: #F0EFEB; color: var(--muted); }
+
+  .del-btn {
+    position: absolute; top: -5px; right: -5px;
+    width: 15px; height: 15px;
+    border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted);
+    font-size: 9px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.12s;
+  }
+
+  .score-pill:hover .del-btn { opacity: 1; }
+
+  .add-btn {
+    padding: 5px 9px;
+    border: 1px dashed var(--border);
+    border-radius: 5px;
+    font-size: 12px; color: var(--muted);
+    background: transparent; cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .add-btn:hover { border-color: var(--accent-mid); color: var(--accent); background: var(--accent-light); }
+
+  .scores-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 7px;
+  }
+
+  .scores-count { font-size: 11px; color: var(--muted); }
+  .scores-count span { font-weight: 600; color: var(--accent); }
+
+  .avg-chip {
+    display: inline-block;
+    padding: 2px 7px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+
+  .avg-chip.good { background: var(--success-light); color: var(--success); }
+  .avg-chip.mid  { background: var(--warning-light); color: var(--warning); }
+  .avg-chip.bad  { background: var(--danger-light); color: var(--danger); }
+
+  /* ── Info box ── */
+  .info-box {
+    border-radius: var(--radius-xs);
+    padding: 9px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  .info-box.yellow { background: var(--yellow-light); color: var(--warning); border: 1px solid #F5C800; }
+  .info-box.blue   { background: var(--accent-light); color: var(--accent); border: 1px solid #B8D5F5; }
+
+  /* ── Button ── */
+  .calc-btn {
+    width: 100%; padding: 13px;
+    background: var(--text); color: white;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+    margin-top: 4px;
+  }
+
+  .calc-btn:hover { opacity: 0.88; }
+  .calc-btn:active { transform: scale(0.99); }
+
+  /* ── Result panel ── */
+  .result-panel { position: sticky; top: 24px; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .result-hero {
+    padding: 22px 18px;
+    text-align: center;
+    background: var(--text);
+  }
+
+  .rh-label {
+    font-size: 11px; color: rgba(255,255,255,0.5);
+    font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+
+  .rh-amount {
+    font-size: 36px; font-weight: 700; color: white;
+    letter-spacing: -0.02em; line-height: 1.1;
+  }
+
+  .rh-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 5px; }
+
+  .rh-amount .rh-rubsign { font-size: 26px; }
+
+  .coeff-list { padding: 14px; display: grid; gap: 6px; }
+
+  .cr {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 11px;
+    border-radius: var(--radius-xs);
+    background: var(--bg);
+  }
+
+  .cr.hl { background: #FFF9D6; }
+
+  .cr-name { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .cr-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .cr-val.g { color: var(--success); }
+  .cr-val.w { color: var(--warning); }
+  .cr-val.b { color: var(--danger); }
+  .cr-val.a { color: var(--accent); }
+  .cr-val.y { color: #9A7D00; }
+
+  .formula-note {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── Rules block ── */
+  .rules {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-top: 14px;
+  }
+
+  .rule {
+    display: flex; gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .rule:last-child { border-bottom: none; }
+  .rule-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; margin-top: 6px; }
+  .rule strong { color: var(--text); font-weight: 600; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 6px 0 14px; }
+
+  @media (max-width: 840px) {
+    .page { grid-template-columns: 1fr; }
+    .result-panel { position: static; }
+  }
+
+  @media (max-width: 720px) {
+    .header { flex-direction: column; align-items: flex-start; padding: 14px 18px; }
+    .header-text { width: 100%; }
+    .header-text h1 { font-size: 14px; }
+    .page { padding: 18px 14px; gap: 16px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .card { padding: 16px; }
+    .scores-wrap { min-height: auto; }
+    .add-btn { width: 100%; justify-content: center; }
+    .add-btn + .add-btn { margin-left: 0; margin-top: 8px; }
+    .info-box { padding: 10px; }
+  }
+
+  @media (max-width: 540px) {
+    .header { padding: 12px 16px; }
+    .page { padding: 14px 12px; gap: 14px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 13px; }
+    .page { padding: 14px 10px; gap: 14px; }
+    .header { padding: 12px 14px; }
+    .card { padding: 14px; }
+    .card-head { gap: 8px; }
+    .card-title { font-size: 12px; }
+    .rh-amount { font-size: 32px; }
+    .rh-sub { font-size: 11px; }
+    .coeff-list { padding: 12px; }
+    .cr { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tbank-logo">Т</div>
+  <div class="header-text">
+    <h1>Калькулятор премии</h1>
+    <p>Отдел обслуживания входящих обращений</p>
+  </div>
+</div>
+
+<div class="page">
+<div class="left">
+
+  <!-- Основные параметры -->
+  <p class="sec-label">Основные параметры</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#E8F1FB; color:#1F5FA6;">💼</div>
+      <span class="card-title">Ставка и выработка</span>
+    </div>
+    <div class="grid3">
+      <div class="fg">
+        <label>Базовая ставка премии (₽)</label>
+        <input type="number" id="baseRate" value="18000" min="0">
+      </div>
+      <div class="fg">
+        <label>Факт. рабочих часов</label>
+        <input type="number" id="factHours" value="160" min="0">
+      </div>
+      <div class="fg">
+        <label>Запланировано часов</label>
+        <input type="number" id="planHours" value="160" min="1">
+      </div>
+      <div class="fg">
+        <label>Сумма за офферы (₽)</label>
+        <input type="number" id="offers" value="0" min="0">
+      </div>
+      <div class="fg full" style="grid-column: 2 / -1">
+        <label>Статус сотрудника</label>
+        <select id="empStatus">
+          <option value="normal">Устроился до 19-го числа</option>
+          <option value="new6plus">После 19-го, отработал ≥ 6 рабочих дней</option>
+          <option value="new6less">После 19-го, отработал &lt; 6 рабочих дней</option>
+        </select>
+      </div>
+    </div>
+    <div class="info-box yellow" style="margin-top:10px;">
+      До 19-го: (Ставка × Выработка × К_итог × К_дисц) + офферы. После 19-го ≥6 дней: (Ставка × Выработка × К_дисц) + офферы. После 19-го &lt;6 дней: только офферы (несгораемые).
+    </div>
+  </div>
+
+  <!-- Эффективность -->
+  <p class="sec-label">Эффективность — таргетное время</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#E8F4DC; color:#2D6B0F;">⚡</div>
+      <span class="card-title">Коммуникации и попадание в таргет</span>
+    </div>
+    <div class="grid2">
+      <div class="fg">
+        <label>Звонков всего (факт)</label>
+        <input type="number" id="totalCalls" value="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Из них — в таргете</label>
+        <input type="number" id="targetCalls" value="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Чатов всего (факт)</label>
+        <input type="number" id="totalChats" value="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Из них — в таргете</label>
+        <input type="number" id="targetChats" value="0" min="0">
+      </div>
+    </div>
+    <div class="info-box blue" style="margin-top:10px;">
+      К_эффективности = (таргетные звонки + таргетные чаты) ÷ (все звонки + все чаты)
+      и преобразуется в коэффициент: 0%–49,99% → 0, 50%–54,99% → 0,3, 55%–59,99% → 0,7, 60%–69,99% → 1, ≥70% → 1,1.
+    </div>
+  </div>
+
+  <!-- Качество -->
+  <p class="sec-label">Качество — оценки TQM</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#FFF9D6; color:#9A7D00;">⭐</div>
+      <span class="card-title">Оценки звонков</span>
+    </div>
+    <div class="scores-wrap" id="callScores"></div>
+    <div class="scores-meta">
+      <span class="scores-count">Оценок: <span id="callCount">4</span></span>
+      <span id="callAvgChip"></span>
+    </div>
+    <div style="margin-top:8px;">
+      <button class="add-btn" onclick="addScore('call')">+ Добавить оценку</button>
+      <button class="add-btn" style="margin-left:6px;" onclick="addKO('call')">+ КО (0–15 → 0)</button>
+    </div>
+    <div class="info-box yellow" style="margin-top:10px;">
+      КО и КО–15 учитывается как 0. Отсутствие оценок → К_качества = 1
+    </div>
+    <div class="info-box blue" style="margin-top:10px;">
+      К_звонков и К_чатов рассчитываются по разным диапазонам.
+      Звонки: 0–69,99 → 0, 70–79,99 → 0,3, 80–91,99 → 0,7, 92–97,99 → 1, ≥98 → 1,1.
+      Чаты: 0–74,99 → 0, 75–84,99 → 0,3, 85–91,99 → 0,7, 92–97,99 → 1, ≥98 → 1,1.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#EDE8FB; color:#5046B5;">💬</div>
+      <span class="card-title">Оценки чатов</span>
+    </div>
+    <div class="scores-wrap" id="chatScores"></div>
+    <div class="scores-meta">
+      <span class="scores-count">Оценок: <span id="chatCount">6</span></span>
+      <span id="chatAvgChip"></span>
+    </div>
+    <div style="margin-top:8px;">
+      <button class="add-btn" onclick="addScore('chat')">+ Добавить оценку</button>
+      <button class="add-btn" style="margin-left:6px;" onclick="addKO('chat')">+ КО (0–15 → 0)</button>
+    </div>
+  </div>
+
+  <!-- СПО и Пост -->
+  <p class="sec-label">СПО и Поствызов — вычеты</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#FCEAEA; color:#A02020;">⏸</div>
+      <span class="card-title">Коэффициент вычета К_пост/спо</span>
+    </div>
+    <div class="grid2">
+      <div class="fg">
+        <label>Пост, сек</label>
+        <input type="number" id="kPost" value="0" min="0" step="1">
+      </div>
+      <div class="fg">
+        <label>СПО, %</label>
+        <input type="number" id="kSpo" value="0" min="0" max="100" step="0.1">
+      </div>
+    </div>
+    <div class="info-box yellow" style="margin-top:10px;">
+      К_пост/спо определяется по таблице: Пост&lt;20 и СПО&lt;5 → 0; Пост 20–40 и СПО 5–10 → 0,2; Пост&gt;40 и СПО&gt;10 → 0,5.
+      Вычет применяется только при невыполнении целевого показателя.
+    </div>
+  </div>
+
+  <!-- Дисциплина -->
+  <p class="sec-label">Дисциплина</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon" style="background:#FCEAEA; color:#A02020;">🕐</div>
+      <span class="card-title">Нарушения</span>
+    </div>
+    <div class="grid2">
+      <div class="fg">
+        <label>Опоздания (учитываемые)</label>
+        <input type="number" id="lateCount" value="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Невыходы</label>
+        <input type="number" id="absentCount" value="0" min="0">
+      </div>
+    </div>
+    <div class="info-box yellow" style="margin-top:10px;">
+      Одно опоздание &lt;10 минут за месяц — не учитывается.
+      К_дисциплины определяется по таблице на внутреннем портале.
+      Примеры: 2 опоздания = 0,95 · 1 невыход + 1 опоздание = 0,77
+    </div>
+    <div style="margin-top:10px;">
+      <div class="fg">
+        <label>Коэффициент дисциплины (вручную)</label>
+        <input type="number" id="kDisc" value="1" min="0" max="1" step="0.01">
+      </div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Рассчитать премию →</button>
+</div>
+
+<!-- Правая панель -->
+<div class="result-panel">
+  <div class="result-card">
+    <div class="result-hero" id="resultHero">
+      <div class="rh-label">Итоговая премия</div>
+      <div class="rh-amount" id="resultAmount">— ₽</div>
+      <div class="rh-sub" id="resultSub">Заполните данные и нажмите «Рассчитать»</div>
+    </div>
+    <div class="coeff-list">
+      <div class="cr">
+        <span class="cr-name">Выработка</span>
+        <span class="cr-val a" id="rVyr">—</span>
+      </div>
+      <div class="cr">
+        <span class="cr-name">К_качества</span>
+        <span class="cr-val y" id="rKQ">—</span>
+      </div>
+      <div class="cr">
+        <span class="cr-name">К_эффективности (% таргет)</span>
+        <span class="cr-val a" id="rKE">—</span>
+      </div>
+      <div class="cr">
+        <span class="cr-name">К_пост/спо (вычет)</span>
+        <span class="cr-val b" id="rKP">—</span>
+      </div>
+      <div class="cr hl">
+        <span class="cr-name">К_итог</span>
+        <span class="cr-val y" id="rKI">—</span>
+      </div>
+      <div class="cr">
+        <span class="cr-name">К_дисциплины</span>
+        <span class="cr-val" id="rKD">—</span>
+      </div>
+      <div class="cr">
+        <span class="cr-name">Сумма за офферы (несгораемая)</span>
+        <span class="cr-val g" id="rOffer">—</span>
+      </div>
+    </div>
+    <div class="formula-note" id="rNote">
+      Формула: (Ставка × Выработка × К_итог × К_дисциплины) + [Сумма за офферы]
+    </div>
+  </div>
+
+  <div class="rules">
+    <p class="sec-label" style="margin-top:0;">Правила расчёта</p>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_итог</strong> = 0,5 × К_качества + 0,5 × К_эффективности − К_пост/спо</div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_качества</strong> = (Доля оценок зв. × К_звонков) + (Доля оценок чатов × К_чатов). Нет оценок → К = 1</div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_звонков</strong> и <strong>К_чатов</strong> вычисляются по разным диапазонам:
+      звонки 0–69,99 → 0, 70–79,99 → 0,3, 80–91,99 → 0,7, 92–97,99 → 1, ≥98 → 1,1;
+      чаты 0–74,99 → 0, 75–84,99 → 0,3, 85–91,99 → 0,7, 92–97,99 → 1, ≥98 → 1,1.
+    </div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_эффективности</strong> = таргетных коммуникаций ÷ всего коммуникаций.</div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_эффективности</strong> преобразуется в коэффициент: 0%–49,99% → 0, 50%–54,99% → 0,3, 55%–59,99% → 0,7, 60%–69,99% → 1, ≥70% → 1,1.</div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>К_пост/спо</strong> = 0, если Пост&lt;20 и СПО&lt;5; 0,2, если Пост 20–40 и СПО 5–10; 0,5, если Пост&gt;40 и СПО&gt;10.</div></div>
+    <div class="rule"><div class="rule-dot"></div><div><strong>Выработка</strong> = факт часов ÷ план часов. Отпуска, больничные — в знаменателе</div></div>
+    <div class="rule"><div class="rule-dot"></div><div>Офферы — несгораемая сумма, прибавляется к итогу всегда</div></div>
+    <div class="rule"><div class="rule-dot"></div><div>Округление по математическим правилам до 2 знаков</div></div>
+  </div>
+</div>
+</div>
+
+<script>
+  const CALL_INIT = [100, 100, 100, 80];
+  const CHAT_INIT = [100, 100, 0, 100, 50, 100]; // КО = 0
+
+  function scoreClass(v) {
+    if (v === null) return 'zero';
+    if (v >= 85) return 'good';
+    if (v >= 50) return 'mid';
+    return 'bad';
+  }
+
+  function createPill(val, type, isKO) {
+    const wrap = document.createElement('div');
+    wrap.className = 'score-pill';
+
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.className = 'score-input';
+    inp.min = 0; inp.max = 100;
+    inp.value = val;
+    if (isKO) inp.readOnly = true;
+    inp.dataset.ko = isKO ? '1' : '0';
+
+    const update = () => {
+      const v = inp.dataset.ko === '1' ? 0 : (parseFloat(inp.value) || 0);
+      inp.className = 'score-input ' + scoreClass(inp.dataset.ko === '1' ? 0 : parseFloat(inp.value));
+      updateMeta(type);
+    };
+    inp.oninput = update;
+    update();
+
+    const del = document.createElement('button');
+    del.className = 'del-btn';
+    del.innerHTML = '×';
+    del.title = 'Удалить';
+    del.onclick = () => { wrap.remove(); updateMeta(type); };
+
+    wrap.appendChild(inp);
+    wrap.appendChild(del);
+    return wrap;
+  }
+
+  function addScore(type, val = 100, isKO = false) {
+    const c = document.getElementById(type + 'Scores');
+    c.appendChild(createPill(val, type, isKO));
+    updateMeta(type);
+  }
+
+  function addKO(type) { addScore(type, 0, true); }
+
+  function getScores(type) {
+    const inputs = document.getElementById(type + 'Scores').querySelectorAll('input');
+    return Array.from(inputs).map(i => i.dataset.ko === '1' ? 0 : (parseFloat(i.value) || 0));
+  }
+
+  function updateMeta(type) {
+    const scores = getScores(type);
+    const n = scores.length;
+    document.getElementById(type + 'Count').textContent = n;
+    const chipEl = document.getElementById(type + 'AvgChip');
+    if (n === 0) { chipEl.innerHTML = ''; return; }
+    const avg = scores.reduce((a, b) => a + b, 0) / n;
+    const cls = avg >= 85 ? 'good' : avg >= 50 ? 'mid' : 'bad';
+    chipEl.innerHTML = `<span class="avg-chip ${cls}">Ср. ${avg.toFixed(2)}</span>`;
+  }
+
+  function r2(v) { return Math.round(v * 100) / 100; }
+  function fmt(v) { return r2(v).toFixed(2); }
+
+  function qualityCoefCall(avg) {
+    if (avg >= 98) return 1.1;
+    if (avg >= 92) return 1;
+    if (avg >= 80) return 0.7;
+    if (avg >= 70) return 0.3;
+    return 0;
+  }
+
+  function qualityCoefChat(avg) {
+    if (avg >= 98) return 1.1;
+    if (avg >= 92) return 1;
+    if (avg >= 85) return 0.7;
+    if (avg >= 75) return 0.3;
+    return 0;
+  }
+
+  function effCoef(pct) {
+    if (pct === null) return 0;
+    if (pct < 50) return 0;
+    if (pct < 55) return 0.3;
+    if (pct < 60) return 0.7;
+    if (pct < 70) return 1;
+    return 1.1;
+  }
+
+  function calculate() {
+    const base = parseFloat(document.getElementById('baseRate').value) || 0;
+    const factH = parseFloat(document.getElementById('factHours').value) || 0;
+    const planH = parseFloat(document.getElementById('planHours').value) || 1;
+    const offers = parseFloat(document.getElementById('offers').value) || 0;
+    const status = document.getElementById('empStatus').value;
+
+    const totalCalls = parseFloat(document.getElementById('totalCalls').value) || 0;
+    const targetCalls = parseFloat(document.getElementById('targetCalls').value) || 0;
+    const totalChats = parseFloat(document.getElementById('totalChats').value) || 0;
+    const targetChats = parseFloat(document.getElementById('targetChats').value) || 0;
+
+    const postSec = parseFloat(document.getElementById('kPost').value) || 0;
+    const spoPct = parseFloat(document.getElementById('kSpo').value) || 0;
+    const kDiscVal = parseFloat(document.getElementById('kDisc').value);
+    const kDisc = isNaN(kDiscVal) ? 1 : Math.max(0, Math.min(1, kDiscVal));
+
+    const lateN = parseInt(document.getElementById('lateCount').value) || 0;
+    const absentN = parseInt(document.getElementById('absentCount').value) || 0;
+
+    const callScores = getScores('call');
+    const chatScores = getScores('chat');
+    const totalComm = totalCalls + totalChats;
+
+    // Выработка
+    const vyrabotka = r2(factH / planH);
+
+    // К_эффективности
+    const kEffPct = totalComm > 0
+      ? ((targetCalls + targetChats) / totalComm) * 100
+      : null;
+    const kEff = r2(effCoef(kEffPct));
+
+    // К_качества
+    let kQuality;
+    const totalScores = callScores.length + chatScores.length;
+    if (totalScores === 0) {
+      kQuality = 1;
+    } else {
+      const callAvg = callScores.length > 0
+        ? callScores.reduce((a, b) => a + b, 0) / callScores.length
+        : 0;
+      const chatAvg = chatScores.length > 0
+        ? chatScores.reduce((a, b) => a + b, 0) / chatScores.length
+        : 0;
+      const shareCall = callScores.length / totalScores;
+      const shareChat = chatScores.length / totalScores;
+      const kCall = qualityCoefCall(callAvg);
+      const kChat = qualityCoefChat(chatAvg);
+      kQuality = r2(shareCall * kCall + shareChat * kChat);
+    }
+
+    // К_пост/спо (вычет по порогам Пост/СПО)
+    let kPostSpo = 0;
+    if (totalComm > 0) {
+      if (postSec < 20 && spoPct < 5) {
+        kPostSpo = 0;
+      } else if (postSec >= 20 && postSec <= 40 && spoPct >= 5 && spoPct <= 10) {
+        kPostSpo = 0.2;
+      } else if (postSec > 40 && spoPct > 10) {
+        kPostSpo = 0.5;
+      } else {
+        kPostSpo = 0;
+      }
+    }
+
+    // К_итог
+    const kTotal = r2(0.5 * kQuality + 0.5 * kEff - kPostSpo);
+
+    // Премия
+    let bonus = 0;
+    if (status === 'new6less') {
+      bonus = offers;
+    } else if (status === 'new6plus') {
+      // После 19-го ≥6 дней: без К_итог
+      bonus = r2(base * vyrabotka * kDisc) + offers;
+    } else {
+      bonus = r2(base * vyrabotka * kTotal * kDisc) + offers;
+    }
+
+    // UI
+    document.getElementById('resultAmount').textContent =
+      Math.round(bonus).toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('resultSub').textContent =
+      status === 'new6less'
+        ? 'Новичок <6 дней — только офферы'
+        : status === 'new6plus'
+          ? `После 19-го ≥6 дней: ставка × выработка × К_дисц`
+          : `База ${base.toLocaleString('ru-RU')} ₽ · Выработка ${(vyrabotka * 100).toFixed(0)}%`;
+
+    document.getElementById('rVyr').textContent = fmt(vyrabotka);
+    document.getElementById('rVyr').className = 'cr-val ' + (vyrabotka >= 1 ? 'g' : vyrabotka >= 0.8 ? 'w' : 'b');
+
+    document.getElementById('rKQ').textContent = fmt(kQuality);
+    document.getElementById('rKQ').className = 'cr-val ' + (kQuality >= 0.85 ? 'g' : kQuality >= 0.7 ? 'w' : 'b');
+
+    const kEffPctText = kEffPct !== null ? `${kEff.toFixed(2)} (${kEffPct.toFixed(2)}%)` : '—';
+    document.getElementById('rKE').textContent = kEffPctText;
+    document.getElementById('rKE').className = 'cr-val ' + (kEff >= 0.9 ? 'g' : kEff >= 0.75 ? 'w' : 'b');
+
+    document.getElementById('rKP').textContent = kPostSpo > 0 ? '−' + fmt(kPostSpo) : '0 (без вычета)';
+    document.getElementById('rKP').className = 'cr-val ' + (kPostSpo > 0 ? 'b' : 'g');
+
+    document.getElementById('rKI').textContent = fmt(kTotal);
+    document.getElementById('rKI').className = 'cr-val ' + (kTotal >= 0.9 ? 'g' : kTotal >= 0.7 ? 'w' : 'b');
+
+    document.getElementById('rKD').textContent = fmt(kDisc);
+    document.getElementById('rKD').className = 'cr-val ' + (kDisc >= 1 ? 'g' : kDisc >= 0.85 ? 'w' : 'b');
+
+    document.getElementById('rOffer').textContent = offers > 0 ? '+' + offers.toLocaleString('ru-RU') + ' ₽' : '—';
+
+    let formulaStr;
+    if (status === 'new6less') {
+      formulaStr = `Новичок (&lt; 6 дней) — премия не начисляется. [Сумма за офферы] = ${offers.toLocaleString('ru-RU')} ₽`;
+    } else if (status === 'new6plus') {
+      formulaStr = `(${base.toLocaleString('ru-RU')} × ${fmt(vyrabotka)} × ${fmt(kDisc)}) + [Сумма за офферы] = <strong>${Math.round(bonus).toLocaleString('ru-RU')} ₽</strong>`;
+    } else {
+      formulaStr = `(${base.toLocaleString('ru-RU')} × ${fmt(vyrabotka)} × ${fmt(kTotal)} × ${fmt(kDisc)}) + [Сумма за офферы] = <strong>${Math.round(bonus).toLocaleString('ru-RU')} ₽</strong>`;
+    }
+    document.getElementById('rNote').innerHTML = `<strong>Формула:</strong> ` + formulaStr;
+
+    // Hero color
+    const hero = document.getElementById('resultHero');
+    if (status === 'new6less') {
+      hero.style.background = '#6B5000';
+    } else if (kTotal >= 0.9 && kDisc >= 0.95) {
+      hero.style.background = 'linear-gradient(135deg, #1D5E0E 0%, #2D8A14 100%)';
+    } else if (kTotal < 0.6 || kDisc < 0.7) {
+      hero.style.background = 'linear-gradient(135deg, #7A1515 0%, #B02020 100%)';
+    } else {
+      hero.style.background = 'var(--text)';
+    }
+  }
+
+  // Init
+  CALL_INIT.forEach(v => addScore('call', v));
+  CHAT_INIT.forEach(v => addScore('chat', v));
+  calculate();
+</script>
+</body>
+</html>
