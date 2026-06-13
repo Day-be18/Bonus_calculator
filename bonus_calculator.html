@@ -28,6 +28,25 @@
     --radius-xs: 6px;
   }
 
+  :root[data-theme="dark"] {
+    --bg: #1A1916;
+    --surface: #2B2925;
+    --border: #3D3A33;
+    --text: #F5F4F0;
+    --muted: #9B9892;
+    --accent: #5BA3E0;
+    --accent-light: #1F3550;
+    --accent-mid: #6AABEE;
+    --yellow: #FFD700;
+    --yellow-light: #2B2415;
+    --success: #7FD056;
+    --success-light: #1F3D0F;
+    --warning: #FFAC4D;
+    --warning-light: #3D2410;
+    --danger: #FF6B6B;
+    --danger-light: #3D1515;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -46,6 +65,31 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .theme-toggle {
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+  }
+
+  .theme-toggle:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
   }
 
   .tbank-logo {
@@ -324,9 +368,11 @@
   }
 
   @media (max-width: 720px) {
-    .header { flex-direction: column; align-items: flex-start; padding: 14px 18px; }
-    .header-text { width: 100%; }
+    .header { flex-direction: row; align-items: center; padding: 14px 18px; justify-content: space-between; }
+    .header-left { width: auto; }
+    .header-text { width: auto; }
     .header-text h1 { font-size: 14px; }
+    .theme-toggle { padding: 5px 10px; font-size: 13px; }
     .page { padding: 18px 14px; gap: 16px; }
     .grid2, .grid3 { grid-template-columns: 1fr; }
     .card { padding: 16px; }
@@ -338,6 +384,7 @@
 
   @media (max-width: 540px) {
     .header { padding: 12px 16px; }
+    .theme-toggle { padding: 5px 8px; font-size: 12px; }
     .page { padding: 14px 12px; gap: 14px; }
     .grid2, .grid3 { grid-template-columns: 1fr; }
   }
@@ -346,6 +393,7 @@
     body { font-size: 13px; }
     .page { padding: 14px 10px; gap: 14px; }
     .header { padding: 12px 14px; }
+    .theme-toggle { padding: 4px 6px; font-size: 11px; }
     .card { padding: 14px; }
     .card-head { gap: 8px; }
     .card-title { font-size: 12px; }
@@ -359,11 +407,14 @@
 <body>
 
 <div class="header">
-  <div class="tbank-logo">Т</div>
-  <div class="header-text">
-    <h1>Калькулятор премии</h1>
-    <p>Отдел обслуживания входящих обращений</p>
+  <div class="header-left">
+    <div class="tbank-logo">Т</div>
+    <div class="header-text">
+      <h1>Калькулятор премии</h1>
+      <p>Отдел обслуживания входящих обращений</p>
+    </div>
   </div>
+  <button class="theme-toggle" id="themeToggle">🌙 Темная</button>
 </div>
 
 <div class="page">
@@ -598,6 +649,28 @@
 </div>
 
 <script>
+  // Theme management
+  const themeToggle = document.getElementById('themeToggle');
+  const htmlEl = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+
+  // Set initial theme
+  htmlEl.setAttribute('data-theme', savedTheme);
+  updateThemeButton();
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = htmlEl.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    htmlEl.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeButton();
+  });
+
+  function updateThemeButton() {
+    const theme = htmlEl.getAttribute('data-theme');
+    themeToggle.textContent = theme === 'light' ? '🌙 Темная' : '☀️ Светлая';
+  }
+
   const CALL_INIT = [100, 100, 100, 80];
   const CHAT_INIT = [100, 100, 0, 100, 50, 100]; // КО = 0
 
